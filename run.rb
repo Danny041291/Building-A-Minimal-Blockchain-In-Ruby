@@ -17,10 +17,12 @@ class Transaction
 		@signature = signature
 	end
 	
-	def process()
+	def process
 		if is_singnature_valid
 			sender_wallet.outcoming_transactions.push(self)
 			receiver_wallet.incoming_transactions.push(self)
+		else
+			puts("Error: invalid signature, the transaction will not be performed.")
 		end
 	end
 	
@@ -28,7 +30,7 @@ class Transaction
 	
 	attr_accessor :sender_wallet, :receiver_wallet, :signature
 	
-	def is_singnature_valid()
+	def is_singnature_valid
 		data = "#{sender_wallet.public_key}#{receiver_wallet.public_key}#{funds}"
 		OpenSSL::PKey::RSA.new(sender_wallet.public_key, PEM_PASSWORD).verify(OpenSSL::Digest::SHA256.new, signature, data)
 	end
@@ -37,7 +39,7 @@ end
 
 class Wallet
 
-	attr_accessor :private_key, :public_key, :incoming_transactions, :outcoming_transactions
+	attr_accessor :public_key, :incoming_transactions, :outcoming_transactions
 	
 	def initialize(initial_amount)
 		rsa_key = OpenSSL::PKey::RSA.new(2048)
@@ -49,7 +51,7 @@ class Wallet
 		@outcoming_transactions = []
 	end
 	
-	def calculate_balance()
+	def calculate_balance
 		amount = initial_amount
 		incoming_transactions.each do |incoming_transaction|
 			amount += incoming_transaction.funds
@@ -69,7 +71,7 @@ class Wallet
 	
 	private 
 	
-	attr_accessor :initial_amount
+	attr_accessor :initial_amount, :private_key
 	
 end
 
@@ -100,10 +102,10 @@ class Block
 	
 	attr_accessor :prev_block, :transaction
 	
-	def calculate_hash()
+	def calculate_hash
 		hash = ""
 		nonce = 0
-		while not hash.start_with?("0")
+		while not hash.start_with?("00000")
 			hash = Digest::SHA256.hexdigest "#{prev_block.hash}#{time_stamp}#{transaction.id}#{nonce}"
 			nonce += 1
 		end
@@ -113,7 +115,7 @@ end
 
 class Chain
 
-	def initialize()
+	def initialize
 		@blocks = []
 	end
 	
@@ -121,6 +123,8 @@ class Chain
 		if is_chain_valid and transaction.process
 			block = Block.new(blocks.last, transaction)
 			blocks.push(block)
+		else
+			puts("Error: invalid or corrupted chain, no block will be added.")
 		end
 	end
 	
@@ -142,17 +146,21 @@ chain = Chain.new()
 
 wallet_A = Wallet.new(50.0)
 wallet_B = Wallet.new(0)
+wallet_C = Wallet.new(0)
 
 puts
 
-puts("Wallet A balance: #{wallet_A.calculate_balance}")
-puts("Wallet B balance: #{wallet_B.calculate_balance}")
+puts("Wallet A balance: #{wallet_A.calculate_balance}$")
+puts("Wallet B balance: #{wallet_B.calculate_balance}$")
 
 puts
 
 transaction_1 = wallet_A.send_funds(wallet_B, 10.0)
+puts("Transaction from Wallet A to Wallet B of #{transaction_1.funds}$")
 
 chain.add_block(transaction_1)
+puts("Transaction done, added new block to chain.")
+puts
 
 puts("Wallet A balance: #{wallet_A.calculate_balance}")
 puts("Wallet B balance: #{wallet_B.calculate_balance}")
@@ -160,8 +168,18 @@ puts("Wallet B balance: #{wallet_B.calculate_balance}")
 puts
 
 transaction_2 = wallet_B.send_funds(wallet_A, 5.0)
+puts("Transaction from Wallet B to Wallet A of #{transaction_2.funds}$")
 
 chain.add_block(transaction_2)
+puts("Transaction done, added new block to chain.")
+puts
 
 puts("Wallet A balance: #{wallet_A.calculate_balance}")
 puts("Wallet B balance: #{wallet_B.calculate_balance}")
+
+puts
+
+corrupted_transaction = Transaction.new(wallet_A, wallet_C, 45.0, "ANY_CORRUPTED_SIGNATURE")
+puts("Corrupted transaction from Wallet A to Wallet C of #{corrupted_transaction.funds}$")
+
+chain.add_block(corrupted_transaction)
