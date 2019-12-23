@@ -161,11 +161,12 @@ puts("Transaction from Wallet A to Wallet B of #{transaction_1.funds}$")
 
 chain.add_block(transaction_1)
 puts("Transaction done, added new block to chain.")
+
 puts
 
-puts("Wallet A balance: #{wallet_A.calculate_balance}")
-puts("Wallet B balance: #{wallet_B.calculate_balance}")
-puts("Wallet C balance: #{wallet_C.calculate_balance}")
+puts("Wallet A balance: #{wallet_A.calculate_balance}$")
+puts("Wallet B balance: #{wallet_B.calculate_balance}$")
+puts("Wallet C balance: #{wallet_C.calculate_balance}$")
 
 puts
 
@@ -174,15 +175,24 @@ puts("Transaction from Wallet B to Wallet A of #{transaction_2.funds}$")
 
 chain.add_block(transaction_2)
 puts("Transaction done, added new block to chain.")
+
 puts
 
-puts("Wallet A balance: #{wallet_A.calculate_balance}")
-puts("Wallet B balance: #{wallet_B.calculate_balance}")
-puts("Wallet C balance: #{wallet_C.calculate_balance}")
+puts("Wallet A balance: #{wallet_A.calculate_balance}$")
+puts("Wallet B balance: #{wallet_B.calculate_balance}$")
+puts("Wallet C balance: #{wallet_C.calculate_balance}$")
 
 puts
 
 corrupted_transaction = Transaction.new(wallet_A, wallet_C, 45.0, "ANY_CORRUPTED_SIGNATURE")
 puts("Corrupted transaction from Wallet A to Wallet C of #{corrupted_transaction.funds}$")
 
+puts
+
 chain.add_block(corrupted_transaction)
+
+puts
+
+puts("Wallet A balance: #{wallet_A.calculate_balance}$")
+puts("Wallet B balance: #{wallet_B.calculate_balance}$")
+puts("Wallet C balance: #{wallet_C.calculate_balance}$")
