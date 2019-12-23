@@ -152,6 +152,7 @@ puts
 
 puts("Wallet A balance: #{wallet_A.calculate_balance}$")
 puts("Wallet B balance: #{wallet_B.calculate_balance}$")
+puts("Wallet C balance: #{wallet_C.calculate_balance}$")
 
 puts
 
@@ -164,6 +165,7 @@ puts
 
 puts("Wallet A balance: #{wallet_A.calculate_balance}")
 puts("Wallet B balance: #{wallet_B.calculate_balance}")
+puts("Wallet C balance: #{wallet_C.calculate_balance}")
 
 puts
 
@@ -176,6 +178,7 @@ puts
 
 puts("Wallet A balance: #{wallet_A.calculate_balance}")
 puts("Wallet B balance: #{wallet_B.calculate_balance}")
+puts("Wallet C balance: #{wallet_C.calculate_balance}")
 
 puts
 
