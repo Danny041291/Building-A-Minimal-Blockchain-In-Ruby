@@ -19,7 +19,7 @@ class Transaction
 	
 	def process
 		if is_singnature_valid
-			sender_wallet.outcoming_transactions.push(self)
+			sender_wallet.outgoing_transactions.push(self)
 			receiver_wallet.incoming_transactions.push(self)
 		else
 			puts("Error: invalid signature, the transaction will not be performed.")
@@ -39,7 +39,7 @@ end
 
 class Wallet
 
-	attr_accessor :public_key, :incoming_transactions, :outcoming_transactions
+	attr_accessor :public_key, :incoming_transactions, :outgoing_transactions
 	
 	def initialize(initial_amount)
 		rsa_key = OpenSSL::PKey::RSA.new(2048)
@@ -48,7 +48,7 @@ class Wallet
 		@private_key = rsa_key.to_pem(cipher,PEM_PASSWORD)
 		@public_key = rsa_key.public_key.to_pem
 		@incoming_transactions = []
-		@outcoming_transactions = []
+		@outgoing_transactions = []
 	end
 	
 	def calculate_balance
@@ -56,8 +56,8 @@ class Wallet
 		incoming_transactions.each do |incoming_transaction|
 			amount += incoming_transaction.funds
 		end
-		outcoming_transactions.each do |outcoming_transaction|
-			amount -= outcoming_transaction.funds
+		outgoing_transactions.each do |outgoing_transaction|
+			amount -= outgoing_transaction.funds
 		end
 		amount
 	end
